@@ -1,0 +1,87 @@
+@startuml ModeloReproductorMusica
+
+skinparam linetype ortho
+
+entity "User" as user {
+  *user_id : uuid <<PK>>
+  --
+  display_name : VARCHAR(255)
+  email : VARCHAR(255)
+  password_hash : STRING
+  mode : VARCHAR(10)
+  created_at : DATE
+}
+
+entity "Tracks" as tracks {
+  *track_id : uuid <<PK>>
+  --
+  owner_id : uuid <<FK>>
+  title : string
+  artist : string
+  album : string
+  duration : float
+  storage_url : string
+  embedding : vector
+  genre : array[enum]
+}
+
+entity "Playlist" as playlist {
+  *playlist_id : uuid <<PK>>
+  --
+  owner_id : uuid <<FK>>
+  playlist_name : string
+  description : varchar(255)
+  created_by_ai : boolean
+  created_at : date
+}
+
+entity "Playlist_tracks" as playlist_tracks {
+  *playlist_id : uuid <<PK,FK>>
+  *track_id : uuid <<PK,FK>>
+  --
+  position : Integer
+}
+
+entity "Listening_events" as listening_events {
+  *event_id : bigint <<PK>>
+  --
+  user_id : uuid <<FK>>
+  track_id : uuid <<FK>>
+  event_type : enum
+  timestamp : date
+}
+
+entity "User_stats_daily" as user_stats_daily {
+  *user_id : uuid <<PK,FK>>
+  *date : date <<PK>>
+  --
+  total_minutes : float
+  top_genre : enum
+  top_track_id : uuid <<FK>>
+}
+
+entity "AI_requests" as ai_requests {
+  *id : uuid <<PK>>
+  --
+  user_id : uuid <<FK>>
+  prompt : VARCHAR(255)
+  generated_playlist_id : uuid <<FK>>
+  created_at : date
+}
+
+' --- Relaciones con cardinalidad explícita ---
+user           "1" --o{ "*" tracks            : owns
+user           "1" --o{ "*" playlist           : owns
+user           "1" --o{ "*" listening_events   : generates
+user           "1" --o{ "*" user_stats_daily   : has
+user           "1" --o{ "*" ai_requests        : makes
+
+playlist       "1" --o{ "*" playlist_tracks    : contains
+tracks         "1" --o{ "*" playlist_tracks    : appears_in
+
+tracks         "1" --o{ "*" listening_events   : is_played_in
+tracks         "1" --o{ "*" user_stats_daily   : is_top_track_in
+
+playlist       "1" --o{ "*" ai_requests        : was_generated_by
+
+@enduml
