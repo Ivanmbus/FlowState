@@ -10,6 +10,7 @@ entity "User" as user {
   password_hash : STRING
   mode : VARCHAR(10)
   created_at : DATE
+  profile_picture_url : VARCHAR(255)
 }
 
 entity "Tracks" as tracks {
@@ -22,7 +23,7 @@ entity "Tracks" as tracks {
   duration : float
   storage_url : string
   embedding : vector
-  genre : array[enum]
+  genre : string
 }
 
 entity "Playlist" as playlist {
