@@ -5,6 +5,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from sqlalchemy.sql import func
+from sqlalchemy import DateTime
 
 
 class Track(Base):
@@ -16,6 +18,9 @@ class Track(Base):
     artist = Column(String(255), nullable=False)
     album = Column(String(255), nullable=True)
     duration = Column(Float, nullable=False)  # Duration in seconds
+    source = Column(String(20), nullable=False, default="local")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    cover_url = Column(String(255), nullable=True)  # URL to the cover image
     storage_url = Column(String(255), nullable=False)  # URL to the stored audio file
     embedding = Column(Vector(1536), nullable=True)  # Vector representation of the audio
     genre = Column(String(100), nullable=True)
